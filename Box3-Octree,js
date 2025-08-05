@@ -1,0 +1,71 @@
+import * as THREE from 'three';
+
+export class Box3Octree {
+  constructor(region, depth = 0, maxDepth = 8, maxItems = 10) {
+    this.region = region.clone();
+    this.depth = depth;
+    this.maxDepth = maxDepth;
+    this.maxItems = maxItems;
+    this.boxIndices = [];
+    this.children = null;
+  }
+
+  insert(boxes, index) {
+    if (!this.region.intersectsBox(boxes[index])) return;
+
+    if (this.children) {
+      this.children.forEach(child => child.insert(boxes, index));
+    } else {
+      this.boxIndices.push(index);
+      if (this.boxIndices.length > this.maxItems && this.depth < this.maxDepth) {
+        this.subdivide();
+        this.boxIndices.forEach(i =>
+          this.children.forEach(child => child.insert(boxes, i))
+        );
+        this.boxIndices = [];
+      }
+    }
+  }
+
+  subdivide() {
+    const { min, max } = this.region;
+    const center = this.region.getCenter(new THREE.Vector3());
+    this.children = [];
+
+    for (let x = 0; x <= 1; x++) {
+      for (let y = 0; y <= 1; y++) {
+        for (let z = 0; z <= 1; z++) {
+          const cmin = new THREE.Vector3(
+            x === 0 ? min.x : center.x,
+            y === 0 ? min.y : center.y,
+            z === 0 ? min.z : center.z
+          );
+          const cmax = new THREE.Vector3(
+            x === 0 ? center.x : max.x,
+            y === 0 ? center.y : max.y,
+            z === 0 ? center.z : max.z
+          );
+          const region = new THREE.Box3(cmin, cmax);
+          this.children.push(
+            new Box3Octree(region, this.depth + 1, this.maxDepth, this.maxItems)
+          );
+        }
+      }
+    }
+  }
+
+  querySphere(boxes, sphere, resultSet = new Set()) {
+    if (!this.region.intersectsSphere(sphere)) return resultSet;
+
+    if (this.children) {
+      this.children.forEach(child =>
+        child.querySphere(boxes, sphere, resultSet)
+      );
+    } else {
+      this.boxIndices.forEach(i => {
+        if (boxes[i].intersectsSphere(sphere)) resultSet.add(i);
+      });
+    }
+    return resultSet;
+  }
+}
