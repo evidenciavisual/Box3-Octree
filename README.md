@@ -22,15 +22,19 @@ import { Box3Octree } from './Box3Octree.js';
 
 ## Usage
 ```js
+// clone all Box3's into a global bounding volume
 const boxes = /* your array of Box3s */;
 const globalRegion = boxes.reduce((acc, b) => acc.union(b), boxes[0].clone());
 
+// builds tree and insert Boxes
 const tree = new Box3Octree(globalRegion);
 boxes.forEach((_, idx) => tree.insert(boxes, idx));
 
+// set sphere search size and center
 const point = new THREE.Vector3(0, 0, 0);
 const sphere = new THREE.Sphere(point, 2);
 
+// query tree & filter by containsPoint
 const candidates = tree.querySphere(boxes, sphere);
 const results = [...candidates]
   .map(i => boxes[i])
@@ -42,7 +46,7 @@ const results = [...candidates]
 Builds the tree
 
 #### `tree.insert(boxes, idx)`
-Inserts a THREE.Box3
+Inserts a THREE.Box3 array + each index
 
 #### `tree.querySphere(boxes, sphere)`
 Searches for boxes using a THREE.Sphere
