@@ -43,7 +43,7 @@ const results = [...candidates]
 
 ## API
 #### `new Box3Octree(globalRegion)`
-Builds the tree
+Builds a tree instance
 
 #### `tree.insert(boxes, idx)`
 Inserts a THREE.Box3 array + each index
