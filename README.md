@@ -57,4 +57,5 @@ Searches for boxes using a THREE.Sphere
 - [ ] "Search by cuboid" method implemented
 - [ ] Pass `global bounding volume` generation to private function
 - [ ] Pass `containsPoint(point)` to private function
+- [ ] Basic demo
 
