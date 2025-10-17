@@ -2,8 +2,10 @@
 
 ## Description
 A lightweight and simple Octree for three.js that uses Box3 instead of Meshes.
-By using the uber-efficient THREE.Box3 as an alternative to THREE.Mesh for space partitioning, you get rid of a lot of unused memory.
-On the other hand, official Octree shiped with three.js uses geometry for intersection test against Sphere / Capsule. As a result, this is not applicable because there is no geometry in Box3.
+Based on the uber-efficient THREE.Box3 as an alternative to THREE.Mesh for space partitioning, you get rid of a lot of unused memory.
+
+## Motivation
+Official Octree shiped with three.js uses actual geometry for intersection test against Sphere / Capsule. As a result, you cannot rely on Box3 because there is no geometry in it.
 This library solves that issue, by using a globalRegion in the broad-phase, and .containsPoint() function in the narrow-phase. 
 
 ## Features
